@@ -9,42 +9,55 @@ function App() {
     const ctx = canvas?.getContext('2d');
     if (!ctx || !canvas) return;
 
-    // Game state variables
-    let x = 50;
-    let y = 50;
-    const speed = 2;
+    let gameRunning = true;
 
-    const draw = () => {
+    const gameLoop = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'yellow';
+
+
+      if (pacman.direction === 'right') pacman.x += pacman.speed;
+      if (pacman.direction === 'left') pacman.x -= pacman.speed;
+      if (pacman.direction === 'up') pacman.y -= pacman.speed;
+      if (pacman.direction === 'down') pacman.y += pacman.speed;
+
+
       ctx.beginPath();
-      ctx.arc(x, y, 10, 0, Math.PI * 2);
+      ctx.arc(pacman.x, pacman.y, pacman.radius, 0.2, Math.PI * 2 - 0.2);
+      ctx.lineTo(pacman.x, pacman.y);
+      ctx.fillStyle = 'yellow';
       ctx.fill();
+
+      if(gameRunning) {
+        requestAnimationFrame(gameLoop);
+      }
     };
 
-    const update = () => {
-      // Basic movement logic (e.g. move right)
-      x += speed;
+    const pacman = {
+      x: 224,  // Center position
+      y: 368,
+      radius: 15,
+      speed: 2,
+      direction: 'right' as 'up' | 'down' | 'left' | 'right'
     };
 
-    const loop = () => {
-      update();
-      draw();
-      requestAnimationFrame(loop);
-    };
-
-    loop();
-
-    // Keyboard input
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight') x += speed;
-      else if (e.key === 'ArrowLeft') x -= speed;
-      else if (e.key === 'ArrowUp') y -= speed;
-      else if (e.key === 'ArrowDown') y += speed;
+      if (e.key === 'ArrowRight') pacman.direction = 'right';
+      if (e.key === 'ArrowLeft') pacman.direction = 'left';
+      if (e.key === 'ArrowUp') pacman.direction = 'up';
+      if (e.key === 'ArrowDown') pacman.direction = 'down';
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+
+
+
+
+
+    gameLoop();
+
+    return () => {
+    gameRunning = false; // Cleanup
+    };
   }, []);
 
 
@@ -52,7 +65,7 @@ function App() {
   <div className="game-wrapper">
     <div className="game-container">
       <h1 className="game-title">Pac Man</h1>
-      <canvas id="game-canvas" width={448} height={496} />
+      <canvas id="game-canvas" width={448} height={496} ref={canvasRef} />
     </div>
   </div>  
   );
