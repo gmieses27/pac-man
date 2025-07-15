@@ -3,7 +3,7 @@ html, body, #root {
   padding: 0;
   height: 100%;
   width: 100%;
-  background-color: black;
+  background-color: rgb(55, 52, 52);
   font-family: 'Press Start 2P', monospace; /* Optional retro font */
   color: yellow;
 }
